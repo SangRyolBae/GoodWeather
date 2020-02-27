@@ -9,7 +9,9 @@
 import Foundation
 import UIKit
 
-class WeatherListTableViewController: UITableViewController, AddWeatherDelegate {
+class WeatherListTableViewController: UITableViewController, AddWeatherDelegate, SettingsDelegate {
+    
+    
     
     private var weatherListViewModel = WeatherListViewModel();
     
@@ -19,8 +21,34 @@ class WeatherListTableViewController: UITableViewController, AddWeatherDelegate 
     }
     
     // 뷰컨트롤러간 데이터 전달
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?)
+    {
+        if segue.identifier == "AddWeatherCityViewController"
+        {
+            prepareSugueForAddWeatherCityViewController(segue: segue);
+        }else if segue.identifier == "SettingsTableViewController"
+        {
+            prepareSugueForSettingsTableViewController(segue: segue);
+        }
+    }
+    
+    private func prepareSugueForSettingsTableViewController(segue: UIStoryboardSegue)
+    {
+        guard let nav = segue.destination as? UINavigationController else
+        {
+            fatalError("Navigation Controller not found");
+        }
         
+        guard let settingsTableVC = nav.viewControllers.first as? SettingsTableViewController else
+        {
+            fatalError("SettingsTableViewController not found");
+        }
+        
+        settingsTableVC.delegate = self;
+    }
+    
+    private func prepareSugueForAddWeatherCityViewController(segue: UIStoryboardSegue)
+    {
         guard let nav = segue.destination as? UINavigationController else
         {
             fatalError("Navigation Controller not found");
@@ -52,8 +80,7 @@ class WeatherListTableViewController: UITableViewController, AddWeatherDelegate 
         
         let weatherVM = self.weatherListViewModel.modelAt(indexPath.row);
         
-        cell.cityNameLabel.text = weatherVM.name
-        cell.temperatureLabel.text = "\(weatherVM.currentTemperature.temperature)º";
+        cell.configure(weatherVM);
         
         return cell
     }
@@ -67,4 +94,14 @@ class WeatherListTableViewController: UITableViewController, AddWeatherDelegate 
         
         print( vm.name );
     }
+    
+    // MARK: - SettingsDelegates funcions
+    func settingsDone(vm: SettingsViewModel)
+    {
+        self.weatherListViewModel.updateUnit(to: vm.selectedUnit);
+        self.tableView.reloadData();
+        
+        print("ASDF");
+    }
+    
 }
