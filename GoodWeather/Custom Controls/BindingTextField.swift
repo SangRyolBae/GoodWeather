@@ -30,13 +30,10 @@ class BindingTextField: UITextField
     required init?(coder aDecoder: NSCoder)
     {
        super.init(coder: aDecoder)
+        
         commonInit();
     }
 
-    
-    
-    
-    
     private func commonInit()
     {
         self.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged);
